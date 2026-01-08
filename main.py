@@ -8,6 +8,7 @@ from routes.delete.eliminar_usuario import router as eliminar_usuario_router
 from routes.create.crear_usuario import router as crear_usuario_router
 from routes.auth.login import router as login_router
 from routes.auth.cambiar_pass import router as cambiar_pass_router
+import os
 
 from dotenv import load_dotenv
 
@@ -15,14 +16,14 @@ load_dotenv()
 
 app = FastAPI(title="API mortadela", version="1.0.0")
 
-origins = [
-    "http://localhost:3000",  # o la URL de tu frontend
-    # "http://localhost:3001",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # en dev: ["*"]
+    allow_origins=[
+        f"http://{os.getenv('FRONTEND_IP')}:3000",
+        "http://localhost:3000",
+        "http://192.168.20.64:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
