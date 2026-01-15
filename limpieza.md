@@ -3,27 +3,13 @@
 ```bash
 python -m venv venv
 venv\Scripts\activate
-pip install fastapi uvicorn
-
-uvicorn main:app --reload
-```
-
-## Dependencias
-
-```bash
-pip install fastapi uvicorn mysql-connector-python
-```
-
-O usando requirements.txt:
-
-```bash
 pip install -r requirements.txt
+
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Limpiar
-
 ## pycache
-
 # linux
 
 ```bash
