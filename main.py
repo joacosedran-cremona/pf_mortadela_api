@@ -16,7 +16,6 @@ from bootstrap import bootstrap
 
 load_dotenv()
 
-# Ejecutar bootstrap al iniciar
 bootstrap()
 
 app = FastAPI(title="API mortadela", version="1.0.0")
@@ -26,7 +25,7 @@ app.add_middleware(
     allow_origins=[
         f"http://{os.getenv('FRONTEND_IP')}:3000",
         "http://localhost:3000",
-        "http://192.168.20.56:3000",
+        "http://192.168.20.53:3000",
         "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
@@ -45,4 +44,4 @@ app.include_router(bootstrap_router)
 
 @app.get("/")
 def hola():
-    return {"mensaje": "Hola, mundo!"}
+    return {"mensaje": "API AUTH"}

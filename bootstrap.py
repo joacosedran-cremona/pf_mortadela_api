@@ -5,7 +5,6 @@ from typing import cast, Dict, Any
 logger = logging.getLogger(__name__)
 
 def has_users() -> bool:
-    """Verifica si existen usuarios en la base de datos"""
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -25,8 +24,7 @@ def has_users() -> bool:
         return False
 
 def bootstrap():
-    """Ejecuta el bootstrap de la aplicación"""
     try:
-        logger.info("🔧 Bootstrap iniciado - esperando datos del frontend para crear superadmin...")
+        logger.info("Bootstrap iniciado")
     except Exception as e:
-        logger.error(f"Error en bootstrap: {e}")
+        logger.error(f"{e}")

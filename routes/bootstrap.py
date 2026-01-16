@@ -19,21 +19,12 @@ class BootstrapResponse(BaseModel):
 
 @router.get("/needs-setup")
 def needs_setup() -> dict[str, bool]:
-    """
-    Retorna true si necesita crear el superadmin, false si ya hay usuarios.
-    El frontend puede consultar esto al iniciar para saber si mostrar pantalla de setup.
-    """
     return {
         "needs_setup": not has_users()
     }
 
 @router.post("/create-superadmin", response_model=BootstrapResponse)
 def create_superadmin(data: CrearSuperAdmin) -> BootstrapResponse:
-    """
-    Crea el superadmin inicial. Solo funciona si no hay usuarios en la BD.
-    El frontend envía los datos y el backend crea el usuario en la BD.
-    """
-    # Verificar que aún no hay usuarios
     if has_users():
         raise HTTPException(
             status_code=400,
@@ -44,7 +35,6 @@ def create_superadmin(data: CrearSuperAdmin) -> BootstrapResponse:
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # Verificar duplicados
         cursor.execute(
             "SELECT 1 FROM Usuarios WHERE username = %s OR email = %s",
             (data.username, data.email)
@@ -56,13 +46,11 @@ def create_superadmin(data: CrearSuperAdmin) -> BootstrapResponse:
                 detail="El usuario o email ya existen"
             )
 
-        # Hash de contraseña
         hashed_password = bcrypt.hashpw(
             data.password.encode("utf-8"),
             bcrypt.gensalt()
         ).decode("utf-8")
 
-        # Crear superadmin
         cursor.execute(
             """
             INSERT INTO Usuarios
@@ -87,7 +75,7 @@ def create_superadmin(data: CrearSuperAdmin) -> BootstrapResponse:
 
         return BootstrapResponse(
             success=True,
-            message="✅ Superadmin creado exitosamente"
+            message="Superadmin creado exitosamente"
         )
 
     except HTTPException:
