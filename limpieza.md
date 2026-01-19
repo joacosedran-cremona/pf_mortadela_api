@@ -12,24 +12,17 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ## pycache
 
 # 1. Eliminar del sistema de archivos
-```bash
-Get-ChildItem -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
-```
-
 # linux
-
 ```bash
 find . -type d -name "__pycache__" -exec rm -r {} +
 ```
 
 # windows
-
 ```bash
 Get-ChildItem -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
 ```
 
 ## venv
-
 # linux
 
 ```bash
