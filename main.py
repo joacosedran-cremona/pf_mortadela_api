@@ -27,7 +27,7 @@ app.add_middleware(
     allow_origins=[
         f"http://{os.getenv('FRONTEND_IP')}:3000",
         "http://localhost:3000",
-        "http://192.168.20.67:3000",
+        "http://192.168.20.59:3000",
         "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
