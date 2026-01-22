@@ -12,7 +12,7 @@ class RecuperacionRequest(BaseModel):
   username: str
   email: EmailStr
 
-@router.post("/recuperacionCheck")
+@router.post("/recuperacion_check")
 def check_user_email(data: RecuperacionRequest):
   conn = get_connection()
   cursor = conn.cursor(dictionary=True)
