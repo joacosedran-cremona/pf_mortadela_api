@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, cast
 from database import get_connection
 from auth import get_current_user, TokenUser
 
@@ -19,19 +19,17 @@ class HabilitarUsuario(BaseModel):
 
 @router.post("/habilitar_usuario", response_model=ApiResponse)
 def habilitar_usuario(data: HabilitarUsuario, current_user: TokenUser = Depends(get_current_user)) -> ApiResponse:
-    # Verificar permisos: usuarios con rol 'user' no pueden habilitar usuarios
     if not current_user.get("rol") or current_user.get("rol") == "user":
         raise HTTPException(status_code=403, detail="No tenés permiso para modificar usuarios")
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Verificar usuario
     cursor.execute(
         "SELECT rol, habilitado FROM Usuarios WHERE username = %s",
         (data.username,)
     )
-    usuario: UsuarioRow = cursor.fetchone()  # type: ignore
+    usuario = cast(UsuarioRow, cursor.fetchone())
 
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -49,7 +47,7 @@ def habilitar_usuario(data: HabilitarUsuario, current_user: TokenUser = Depends(
         "UPDATE Usuarios SET habilitado = 1 WHERE username = %s",
         (data.username,)
     )
-  
+
     conn.commit()
     cursor.close()
     conn.close()

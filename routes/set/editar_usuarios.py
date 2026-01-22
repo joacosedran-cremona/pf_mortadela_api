@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Any, cast, Dict
 from database import get_connection
 from auth import get_current_user, TokenUser
 import bcrypt
@@ -24,32 +24,28 @@ class ApiResponse(BaseModel):
 
 @router.post("/editar_usuario", response_model=ApiResponse)
 def editar_usuario(data: EditarUsuarioData, current_user: TokenUser = Depends(get_current_user)) -> ApiResponse:
-    # Verificar permisos: usuarios con rol 'user' no pueden editar usuarios
-    if not current_user.get("rol") or current_user.get("rol") == "user":
+    if not current_user["rol"] or current_user["rol"] == "user":
         raise HTTPException(status_code=403, detail="No tenés permiso para modificar usuarios")
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # Verificar que el usuario existe
         cursor.execute(
             "SELECT rol FROM Usuarios WHERE id = %s",
             (data.id,)
         )
-        usuario = cursor.fetchone()
+        usuario = cast(Dict[str, Any], cursor.fetchone())
 
         if not usuario:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-        # No permitir editar superadmin
-        if usuario["rol"] == "superadmin":
+        if usuario.get("rol") == "superadmin":
             raise HTTPException(
                 status_code=403,
                 detail="No se puede editar un superadmin"
             )
 
-        # Verificar que email no esté duplicado (excepto el del usuario actual)
         cursor.execute(
             """
             SELECT 1 FROM Usuarios 
@@ -64,7 +60,6 @@ def editar_usuario(data: EditarUsuarioData, current_user: TokenUser = Depends(ge
                 detail="El email ya existe"
             )
 
-        # Verificar que username no esté duplicado (excepto el del usuario actual)
         cursor.execute(
             """
             SELECT 1 FROM Usuarios 
@@ -79,9 +74,8 @@ def editar_usuario(data: EditarUsuarioData, current_user: TokenUser = Depends(ge
                 detail="El username ya existe"
             )
 
-        # Preparar actualización
-        update_fields = []
-        update_values = []
+        update_fields: list[str] = []
+        update_values: list[Any] = []
 
         update_fields.append("username = %s")
         update_values.append(data.username)
@@ -104,7 +98,6 @@ def editar_usuario(data: EditarUsuarioData, current_user: TokenUser = Depends(ge
         update_fields.append("habilitado = %s")
         update_values.append(data.habilitado)
 
-        # Si se proporciona password, hashear e incluir
         if data.password:
             hashed_password = bcrypt.hashpw(
                 data.password.encode("utf-8"),
@@ -113,7 +106,6 @@ def editar_usuario(data: EditarUsuarioData, current_user: TokenUser = Depends(ge
             update_fields.append("password_hash = %s")
             update_values.append(hashed_password)
 
-        # Agregar id al final para el WHERE
         update_values.append(data.id)
 
         query = f"""

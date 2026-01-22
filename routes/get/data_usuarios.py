@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Optional
 from database import get_connection
 from auth import get_current_user, TokenUser
+from typing import Dict, Any, cast
 
 router = APIRouter(tags=["usuarios"])
 
@@ -18,7 +18,6 @@ class DatosUsuarioResponse(BaseModel):
 
 @router.get("/data_usuario/{username}", response_model=DatosUsuarioResponse)
 def obtener_datos_usuario(username: str, current_user: TokenUser = Depends(get_current_user)):
-    # Verificar permisos: solo admin, superadmin o el mismo usuario puede ver sus datos
     if current_user.get("rol") == "user" and current_user.get("username") != username:
         raise HTTPException(status_code=403, detail="No tenés permiso para ver estos datos")
 
@@ -39,15 +38,17 @@ def obtener_datos_usuario(username: str, current_user: TokenUser = Depends(get_c
         if not usuario:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+        usuario = cast(Dict[str, Any], usuario)
+
         return DatosUsuarioResponse(
-            id=usuario["id"],
+            id=int(usuario["id"]),
             email=usuario["email"],
             username=usuario["username"],
             nombre=usuario["nombre"],
             apellido=usuario["apellido"],
             rol=usuario["rol"],
             reporte=bool(usuario["reporte"]),
-            habilitado=usuario["habilitado"]
+            habilitado=int(usuario["habilitado"])
         )
     finally:
         cursor.close()

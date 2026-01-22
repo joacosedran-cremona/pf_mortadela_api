@@ -2,15 +2,22 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes.get.usuarios import router as usuarios_router
-from routes.get.dataUsuarios import router as data_usuarios_router
+from routes.get.data_usuarios import router as data_usuarios_router
+from routes.get.recuperacion_check import router as recuperacion_check_router
+
 from routes.set.deshabilitar_usuario import router as deshabilitar_usuario_router
 from routes.set.habilitar_usuario import router as habilitar_usuario_router
-from routes.set.editarUsuarios import router as editar_usuario_router
+from routes.set.editar_usuarios import router as editar_usuario_router
+
 from routes.delete.eliminar_usuario import router as eliminar_usuario_router
+
 from routes.create.crear_usuario import router as crear_usuario_router
+
 from routes.auth.login import router as login_router
 from routes.auth.cambiar_pass import router as cambiar_pass_router
+
 from routes.bootstrap import router as bootstrap_router
+
 import os
 
 from dotenv import load_dotenv
@@ -45,6 +52,7 @@ app.include_router(crear_usuario_router)
 app.include_router(login_router)
 app.include_router(cambiar_pass_router)
 app.include_router(bootstrap_router)
+app.include_router(recuperacion_check_router)
 
 @app.get("/")
 def hola():
