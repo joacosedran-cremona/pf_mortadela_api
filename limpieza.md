@@ -24,13 +24,11 @@ Get-ChildItem -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -
 
 ## venv
 # linux
-
 ```bash
 rm -rf venv
 ```
 
 # windows
-
 ```bash
 Remove-Item venv -Recurse -Force
 ```

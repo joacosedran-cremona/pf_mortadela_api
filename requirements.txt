@@ -8,3 +8,5 @@ email-validator
 python-dotenv
 cryptography
 requests
+aiohttp
+itsdangerous

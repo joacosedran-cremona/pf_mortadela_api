@@ -15,6 +15,7 @@ from routes.create.crear_usuario import router as crear_usuario_router
 
 from routes.auth.login import router as login_router
 from routes.auth.cambiar_pass import router as cambiar_pass_router
+from routes.auth.reset_password import router as reset_password_router
 
 from routes.bootstrap import router as bootstrap_router
 
@@ -51,6 +52,7 @@ app.include_router(eliminar_usuario_router)
 app.include_router(crear_usuario_router)
 app.include_router(login_router)
 app.include_router(cambiar_pass_router)
+app.include_router(reset_password_router)
 app.include_router(bootstrap_router)
 app.include_router(recuperacion_check_router)
 
