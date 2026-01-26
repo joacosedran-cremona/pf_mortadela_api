@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional, TypedDict, cast, Dict, Any
@@ -52,6 +52,29 @@ def verificar_token_recuperacion(token: str) -> Optional[Dict[str, Any]]:
 def verificar_token(data: VerificarTokenRequest):
     """Verifica que el token de recuperación sea válido"""
     payload = verificar_token_recuperacion(data.token)
+    
+    if payload is None:
+        return JSONResponse(
+            content={
+                "success": False,
+                "error": "Token inválido o expirado"
+            },
+            status_code=401
+        )
+    
+    return JSONResponse(
+        content={
+            "success": True,
+            "email": payload.get("email"),
+            "message": "Token válido"
+        },
+        status_code=200
+    )
+
+@router.get("/reset-password")
+def verificar_token_get(token: str = Query(...)):
+    """Verifica que el token de recuperación sea válido (GET)"""
+    payload = verificar_token_recuperacion(token)
     
     if payload is None:
         return JSONResponse(
